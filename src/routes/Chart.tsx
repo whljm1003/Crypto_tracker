@@ -4,6 +4,7 @@ import ApexChart from "react-apexcharts";
 
 interface ChartProps {
   coinId: string;
+  isDark: boolean;
 }
 
 interface IChartProps {
@@ -17,7 +18,7 @@ interface IChartProps {
   market_cap: number;
 }
 
-function Chart({ coinId }: ChartProps) {
+function Chart({ coinId, isDark }: ChartProps) {
   const { isLoading, data } = useQuery<IChartProps[]>(
     ["ohlcv", coinId],
     () => fetchCoinHistory(coinId),
@@ -32,18 +33,22 @@ function Chart({ coinId }: ChartProps) {
         "Loading chart..."
       ) : (
         <ApexChart
-          type="line"
+          type="candlestick"
           series={[
             {
               name: "Price",
-              data: data?.map((price) => price.close),
+              data: data?.map((price) => ({
+                x: price.time_close,
+                y: [price.open, price.high, price.low, price.close],
+              })),
             },
           ]}
           options={{
             theme: {
-              mode: "dark",
+              mode: isDark ? "dark" : "light",
             },
             chart: {
+              type: "candlestick",
               height: 300,
               width: 500,
               toolbar: {
@@ -51,7 +56,6 @@ function Chart({ coinId }: ChartProps) {
               },
               background: "transparent",
             },
-            grid: { show: false },
             stroke: {
               curve: "smooth",
               width: 4,
@@ -62,15 +66,15 @@ function Chart({ coinId }: ChartProps) {
             xaxis: {
               axisBorder: { show: false },
               axisTicks: { show: false },
-              labels: { show: false },
+              labels: { show: true },
               type: "datetime",
               categories: data?.map((price) => price.time_close),
             },
-            fill: {
-              type: "gradient",
-              gradient: { gradientToColors: ["#0be881"], stops: [0, 100] },
-            },
-            colors: ["#0fbcf9"],
+            // fill: {
+            //   type: "gradient",
+            //   gradient: { gradientToColors: ["#0be881"], stops: [0, 100] },
+            // },
+            // colors: ["#0fbcf9"],
             tooltip: {
               y: {
                 formatter: (value) => `${value.toFixed(2)}`,

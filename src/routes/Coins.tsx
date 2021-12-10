@@ -3,7 +3,9 @@ import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoin } from "../api";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+import LightBtn from "../Img/light-mode.png";
+import DarkBtn from "../Img/dark-mode.png";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -16,15 +18,18 @@ const Header = styled.header`
   display: flex;
   justify-content: center;
   align-items: center;
+  font-weight: 500;
+  position: relative;
 `;
 
 const CoinsList = styled.ul``;
 
 const Coin = styled.li`
-  background-color: white;
-  color: ${(props) => props.theme.bgColor};
+  background-color: ${(props) => props.theme.listBgColor};
+  color: ${(props) => props.theme.textColor};
   border-radius: 15px;
   margin-bottom: 10px;
+  font-weight: 400;
   a {
     display: flex;
     align-items: center;
@@ -53,6 +58,17 @@ const Loader = styled.span`
   text-align: center;
   display: block;
 `;
+
+const DarkImg = styled.img`
+  position: absolute;
+  right: 0;
+  width: 35px;
+  height: 35px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 interface ICoin {
   id: string;
   name: string;
@@ -63,7 +79,12 @@ interface ICoin {
   type: string;
 }
 
-function Coins() {
+interface ICoinsProps {
+  ClickDark: () => void;
+  isDark: boolean;
+}
+
+function Coins({ ClickDark, isDark }: ICoinsProps) {
   // const [coins, setCoins] = useState<ICoin[]>([]);
   // const [loding, setLoding] = useState(true);
   // useEffect(() => {
@@ -78,11 +99,18 @@ function Coins() {
 
   return (
     <Container>
-      <Helmet>
-        <title>COIN</title>
-      </Helmet>
+      <HelmetProvider>
+        <Helmet>
+          <title>COIN</title>
+        </Helmet>
+      </HelmetProvider>
       <Header>
         <Title>COIN</Title>
+        {isDark ? (
+          <DarkImg src={LightBtn} onClick={ClickDark} />
+        ) : (
+          <DarkImg src={DarkBtn} onClick={ClickDark} />
+        )}
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>

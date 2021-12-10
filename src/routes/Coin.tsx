@@ -12,11 +12,30 @@ import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
 import Chart from "./Chart";
 import Price from "./Price";
-import { Helmet } from "react-helmet";
-
+import { Helmet, HelmetProvider } from "react-helmet-async";
+import Back from "../Img/back.png";
 const Title = styled.h1`
   font-size: 48px;
   color: ${(props) => props.theme.accentColor};
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  a {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 0;
+
+    &:hover {
+      cursor: pointer;
+    }
+    img {
+      width: 35px;
+      height: 35px;
+    }
+  }
 `;
 
 const Loader = styled.span`
@@ -35,12 +54,13 @@ const Header = styled.header`
   display: flex;
   justify-content: center;
   align-items: center;
+  font-weight: 500;
 `;
 
 const Overview = styled.div`
   display: flex;
   justify-content: space-between;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: ${(props) => props.theme.listBgColor};
   padding: 10px 20px;
   border-radius: 10px;
 `;
@@ -75,7 +95,7 @@ const Tab = styled.span<{ isActive: boolean }>`
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 400;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: ${(props) => props.theme.listBgColor};
   border-radius: 10px;
   color: ${(props) =>
     props.isActive ? props.theme.accentColor : props.theme.textColor};
@@ -154,7 +174,11 @@ interface PriceData {
   };
 }
 
-function Coin() {
+interface ICoinsProps {
+  isDark: boolean;
+}
+
+function Coin({ isDark }: ICoinsProps) {
   const { coinId } = useParams<CoinProps>();
   const { state } = useLocation<RouteState>();
   const priceMatch = useRouteMatch("/:coinId/price");
@@ -191,18 +215,23 @@ function Coin() {
   const loading = infoLoading || tickersLoading;
   return (
     <Container>
-      <Helmet>
-        <title>
-          {state?.name
-            ? `COIN-${state.name}`
-            : loading
-            ? "Loading..."
-            : `COIN-${infoData?.name}`}
-        </title>
-      </Helmet>
+      <HelmetProvider>
+        <Helmet>
+          <title>
+            {state?.name
+              ? `COIN-${state.name}`
+              : loading
+              ? "Loading..."
+              : `COIN-${infoData?.name}`}
+          </title>
+        </Helmet>
+      </HelmetProvider>
       <Header>
         <Title>
           {state?.name ? state.name : loading ? "Loding..." : infoData?.name}
+          <Link to="/">
+            <img src={Back} alt="back"></img>
+          </Link>
         </Title>
       </Header>
       {loading ? (
@@ -246,10 +275,10 @@ function Coin() {
 
           <Switch>
             <Route path={`/:coinId/price`}>
-              <Price />
+              <Price coinId={coinId} />
             </Route>
             <Route path={`/:coinId/chart`}>
-              <Chart coinId={coinId} />
+              <Chart coinId={coinId} isDark={isDark} />
             </Route>
           </Switch>
         </>

@@ -1,15 +1,21 @@
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Coin from "./routes/Coin";
 import Coins from "./routes/Coins";
-function Router() {
+
+interface IRouterProps {
+  ClickDark: () => void;
+  isDark: boolean;
+}
+
+function Router({ ClickDark, isDark }: IRouterProps) {
   return (
     <BrowserRouter>
       <Switch>
         <Route path="/:coinId">
-          <Coin />
+          <Coin isDark={isDark} />
         </Route>
         <Route path="/">
-          <Coins />
+          <Coins isDark={isDark} ClickDark={ClickDark} />
         </Route>
       </Switch>
     </BrowserRouter>
