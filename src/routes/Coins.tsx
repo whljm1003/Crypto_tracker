@@ -6,6 +6,8 @@ import { fetchCoin } from "../api";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import LightBtn from "../Img/light-mode.png";
 import DarkBtn from "../Img/dark-mode.png";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isDarkAtom } from "../atoms";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -79,12 +81,7 @@ interface ICoin {
   type: string;
 }
 
-interface ICoinsProps {
-  ClickDark: () => void;
-  isDark: boolean;
-}
-
-function Coins({ ClickDark, isDark }: ICoinsProps) {
+function Coins() {
   // const [coins, setCoins] = useState<ICoin[]>([]);
   // const [loding, setLoding] = useState(true);
   // useEffect(() => {
@@ -95,6 +92,9 @@ function Coins({ ClickDark, isDark }: ICoinsProps) {
   //     setLoding(false);
   //   })();
   // }, []);
+  const isDark = useRecoilValue(isDarkAtom);
+  const setDarkAtom = useSetRecoilState(isDarkAtom);
+  const toggleDarkAtom = () => setDarkAtom((prev) => !prev);
   const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoin);
 
   return (
@@ -107,9 +107,9 @@ function Coins({ ClickDark, isDark }: ICoinsProps) {
       <Header>
         <Title>COIN</Title>
         {isDark ? (
-          <DarkImg src={LightBtn} onClick={ClickDark} />
+          <DarkImg src={LightBtn} onClick={toggleDarkAtom} />
         ) : (
-          <DarkImg src={DarkBtn} onClick={ClickDark} />
+          <DarkImg src={DarkBtn} onClick={toggleDarkAtom} />
         )}
       </Header>
       {isLoading ? (
